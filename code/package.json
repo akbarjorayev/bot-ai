@@ -5,8 +5,8 @@
   "main": "boy.js",
   "type": "module",
   "scripts": {
-    "start": "node ./code/bot.js",
-    "dev": "nodemon ./code/bot.js",
+    "start": "node ./bot.js",
+    "dev": "nodemon ./bot.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Akbar <akbarjonjorayev001@gmail.com>",
