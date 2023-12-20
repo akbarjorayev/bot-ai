@@ -1,0 +1,18 @@
+{
+  "name": "bot-ai",
+  "version": "1.0.0",
+  "description": "AI from AJ for everything.",
+  "main": "boy.js",
+  "type": "module",
+  "scripts": {
+    "start": "node ./code/bot.js",
+    "dev": "nodemon ./code/bot.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Akbar <akbarjonjorayev001@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@google/generative-ai": "^0.1.3",
+    "node-telegram-bot-api": "^0.64.0"
+  }
+}
