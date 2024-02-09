@@ -1,34 +1,48 @@
-import TelegramBot from 'node-telegram-bot-api'
-// mine
-import { API } from './api.js'
+import botData from './botData.js'
 import * as AI from './ai.js'
+import * as BUTTONS from './buttons/buttons.js'
+import * as CONVERSATION from './conversation/conversation.js'
 
-const bot = new TelegramBot(API.tgBot, { polling: true })
-const chat = {
-  history: [],
-}
+const { bot, chat } = botData
+
+bot.setMyCommands([
+  {
+    command: '/new',
+    description: 'Start a new conversation',
+  },
+  {
+    command: '/end',
+    description: 'End the current conversation',
+  },
+])
 
 bot.on('message', async (msg) => {
-  if (chat.history.length === 0 && msg.text !== 'New conversation') {
-    startConversationBtn(msg)
+  if (
+    chat.history.length === 0 &&
+    msg.text !== 'New conversation' &&
+    msg.text !== '/new'
+  ) {
+    BUTTONS.startConversationBtn(msg)
     return
   }
 
-  if (msg.text === 'New conversation') {
-    startConversation(msg)
-    endConversationBtn(msg)
+  if (msg.text === 'New conversation' || msg.text === '/new') {
+    CONVERSATION.start(msg)
+    BUTTONS.endConversationBtn(msg)
     return
   }
 
-  if (msg.text === 'End conversation') {
-    endConversation(msg)
+  if (msg.text === 'End conversation' || msg.text === '/end') {
+    CONVERSATION.end(msg)
     return
   }
 
   const chatId = msg.chat.id
 
-  const thinkingMsg = await bot.sendMessage(chatId, `I'm thinking...`, {
-    parse_mode: 'markdown',
+  const loaderGif =
+    'https://www.gstatic.com/lamda/images/bard_sparkle_processing_v2.gif'
+  const thinkingMsg = await bot.sendAnimation(chatId, loaderGif, {
+    caption: "I'm thinking 🤔🤔🤔",
   })
   const thinkingMsgId = thinkingMsg.message_id
 
@@ -39,17 +53,18 @@ bot.on('message', async (msg) => {
     })
 
     const aiRes = await AI.getText(msg.text, chat.history)
-    bot.deleteMessage(chatId, thinkingMsgId)
+    const aiText = aiRes.text()
 
-    bot.sendMessage(chatId, aiRes.text(), { parse_mode: 'markdown' })
+    bot.deleteMessage(chatId, thinkingMsgId)
+    bot.sendMessage(chatId, aiText, { parse_mode: 'markdown' })
 
     chat.history.push({
       role: 'model',
-      parts: aiRes.text(),
+      parts: aiText,
     })
   } catch (err) {
     bot.deleteMessage(chatId, thinkingMsgId)
-    endConversation(msg)
+    CONVERSATION.end(msg)
 
     bot.sendMessage(
       chatId,
@@ -59,52 +74,11 @@ bot.on('message', async (msg) => {
   }
 })
 
-function startConversation(msg) {
-  const chatId = msg.chat.id
-  chat.history = [
-    {
-      role: 'user',
-      parts: 'New conversation started.',
-    },
-  ]
-
-  bot.sendMessage(chatId, 'New conversation started.')
-}
-
-function endConversation(msg) {
-  const chatId = msg.chat.id
-  chat.history = []
-
-  bot.sendMessage(
-    chatId,
-    'Conversation ended. To start a new conversation click /start'
+bot.on('polling_error', async (err) => {
+  await bot.sendMessage(
+    err.message.id,
+    `We are so sorry, something went wrong. Please try again. \n\`${err.message}\``,
+    { parse_mode: 'markdown' }
   )
-}
-
-function startConversationBtn(msg) {
-  button(
-    msg,
-    [['New conversation']],
-    'To start a new conversation click the button'
-  )
-}
-
-function endConversationBtn(msg) {
-  button(
-    msg,
-    [['End conversation']],
-    'To end the conversation click the button'
-  )
-}
-
-function button(msg, keyboard, msgText) {
-  const chatId = msg.chat.id
-  const opts = {
-    reply_markup: {
-      keyboard: keyboard,
-      resize_keyboard: true,
-      one_time_keyboard: true,
-    },
-  }
-  bot.sendMessage(chatId, msgText, opts)
-}
+  CONVERSATION.end(err)
+})
