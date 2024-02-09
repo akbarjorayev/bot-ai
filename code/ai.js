@@ -4,10 +4,11 @@ import { API } from './api.js'
 
 const genAI = new GoogleGenerativeAI(API.gemini)
 
-async function getText(txt) {
+async function getText(msg, history) {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+  const chat = model.startChat(history)
 
-  const result = await model.generateContent(txt)
+  const result = await chat.sendMessage(msg)
   const { response } = await result
   return response
 }
