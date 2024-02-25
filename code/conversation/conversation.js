@@ -12,7 +12,7 @@ function start(msg) {
 
   bot.sendSticker(
     chatId,
-    'CAACAgEAAxkBAAPuZcY4DwPoLf-U4CV4K5NsXBL-shEAAq8CAAKYVyFEvJTaGRuD96w0BA'
+    'CAACAgEAAxkBAAPuZcY4DwPoLf-U4CV4K5NsXBL-shEAAq8CAAKYVyFEvJTaGRuD96w0BA' // ⌨️
   )
   bot.sendMessage(chatId, 'New conversation started ✅')
 }
