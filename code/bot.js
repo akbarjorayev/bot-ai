@@ -27,7 +27,7 @@ bot.on('message', async (msg) => {
   }
 
   if (msg.text === 'New conversation' || msg.text === '/new') {
-    CONVERSATION.start(msg)
+    await CONVERSATION.start(msg)
     BUTTONS.endConversationBtn(msg)
     return
   }
@@ -53,9 +53,18 @@ bot.on('message', async (msg) => {
     })
 
     const aiRes = await AI.getText(msg.text, chat.history)
+    bot.deleteMessage(chatId, thinkingMsgId)
+
+    if (!aiRes) {
+      bot.sendMessage(
+        chatId,
+        `We can't answer your question. Move on. \n\`${err.message}\``,
+        { parse_mode: 'markdown' }
+      )
+    }
+
     const aiText = aiRes.text()
 
-    bot.deleteMessage(chatId, thinkingMsgId)
     bot.sendMessage(chatId, aiText, { parse_mode: 'markdown' })
 
     chat.history.push({
@@ -64,7 +73,7 @@ bot.on('message', async (msg) => {
     })
   } catch (err) {
     bot.deleteMessage(chatId, thinkingMsgId)
-    CONVERSATION.end(msg)
+    await CONVERSATION.end(msg)
 
     bot.sendMessage(
       chatId,
@@ -75,10 +84,10 @@ bot.on('message', async (msg) => {
 })
 
 bot.on('polling_error', async (err) => {
-  await bot.sendMessage(
+  await CONVERSATION.end(err)
+  bot.sendMessage(
     err.message.id,
-    `We are so sorry, something went wrong. Please try again. \n\`${err.message}\``,
+    `I don't want to help you anymore. \n\`${err.message}\``,
     { parse_mode: 'markdown' }
   )
-  CONVERSATION.end(err)
 })

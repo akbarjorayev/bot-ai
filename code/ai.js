@@ -10,7 +10,8 @@ async function getText(msg, history) {
 
   const result = await chat.sendMessage(msg)
   const { response } = await result
-  return response
+
+  return response ? response : false
 }
 
 export { getText }
