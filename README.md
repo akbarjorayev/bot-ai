@@ -21,4 +21,4 @@ Contributions are welcome! If you have ideas for new features, bug fixes, or imp
 This project is licensed under the [MIT License](LICENSE).
 
 ## Contact
-For any questions or inquiries, you can reach out to [Akbar Jorayev] at [akbarjonjorayev001@gmail.com](mailto:akbarjonjorayev001@gmail.com).
+For any questions or inquiries, you can reach out to Akbar Jorayev at [akbarjonjorayev001@gmail.com](mailto:akbarjonjorayev001@gmail.com).
