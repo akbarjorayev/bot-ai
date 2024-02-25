@@ -56,11 +56,9 @@ bot.on('message', async (msg) => {
     bot.deleteMessage(chatId, thinkingMsgId)
 
     if (!aiRes) {
-      bot.sendMessage(
-        chatId,
-        `We can't answer your question. Move on. \n\`${err.message}\``,
-        { parse_mode: 'markdown' }
-      )
+      bot.sendMessage(chatId, `I can't answer to your question. Move on.`, {
+        parse_mode: 'markdown',
+      })
       return
     }
 
