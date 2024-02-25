@@ -61,6 +61,7 @@ bot.on('message', async (msg) => {
         `We can't answer your question. Move on. \n\`${err.message}\``,
         { parse_mode: 'markdown' }
       )
+      return
     }
 
     const aiText = aiRes.text()
