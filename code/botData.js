@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 const botData = {
-  bot: new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true }),
+  bot: new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { webHook: true }),
   chat: {
     history: [],
   },

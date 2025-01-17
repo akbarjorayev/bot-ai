@@ -1,19 +1,19 @@
+import express from 'express'
 import botData from './botData.js'
 import * as AI from './ai.js'
 import * as BUTTONS from './buttons/buttons.js'
 import * as CONVERSATION from './conversation/conversation.js'
 
 const { bot, chat } = botData
+const app = express()
+app.use(express.json())
+
+const webhookUrl = `${process.env.WEBHOOK_URL}/bot${process.env.TELEGRAM_BOT_TOKEN}`
+bot.setWebHook(webhookUrl)
 
 bot.setMyCommands([
-  {
-    command: '/new',
-    description: 'Start a new conversation',
-  },
-  {
-    command: '/end',
-    description: 'End the current conversation',
-  },
+  { command: '/new', description: 'Start a new conversation' },
+  { command: '/end', description: 'End the current conversation' },
 ])
 
 bot.on('message', async (msg) => {
@@ -56,7 +56,7 @@ bot.on('message', async (msg) => {
     bot.deleteMessage(chatId, thinkingMsgId)
 
     if (!aiRes) {
-      bot.sendMessage(chatId, `I can't answer to your question. Move on.`, {
+      bot.sendMessage(chatId, `I can't answer your question. Move on.`, {
         parse_mode: 'markdown',
       })
       return
@@ -76,17 +76,18 @@ bot.on('message', async (msg) => {
 
     bot.sendMessage(
       chatId,
-      `We are so sorry, something went wrong. Please try again. \n\`${err.message}\``,
+      `We are sorry, something went wrong. Please try again. \n\`${err.message}\``,
       { parse_mode: 'markdown' }
     )
   }
 })
 
-bot.on('polling_error', async (err) => {
-  await CONVERSATION.end(err)
-  bot.sendMessage(
-    err.message.id,
-    `I don't want to help you anymore. \n\`${err.message}\``,
-    { parse_mode: 'markdown' }
-  )
+app.post(`/bot${process.env.TELEGRAM_BOT_TOKEN}`, (req, res) => {
+  bot.processUpdate(req.body)
+  res.sendStatus(200)
+})
+
+const PORT = process.env.PORT || 3000
+app.listen(PORT, () => {
+  console.log('Bot is active')
 })
