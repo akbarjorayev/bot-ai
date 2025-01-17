@@ -1,8 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api'
-import { API } from './api.js'
+import dotenv from 'dotenv'
+
+dotenv.config()
 
 const botData = {
-  bot: new TelegramBot(API.tgBot, { polling: true }),
+  bot: new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true }),
   chat: {
     history: [],
   },

@@ -1,8 +1,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai'
-// mine
-import { API } from './api.js'
+import dotenv from 'dotenv'
 
-const genAI = new GoogleGenerativeAI(API.gemini)
+dotenv.config()
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_TOKEN)
 
 async function getText(msg, history) {
   const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
